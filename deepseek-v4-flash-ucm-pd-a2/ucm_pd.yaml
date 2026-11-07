@@ -1,0 +1,15 @@
+# UCM 配置（Transport with UCM 路径）：仅 Prefill 节点使用（kv_both 前缀复用）
+# 存储用 P 节点本地盘即可，无需共享文件系统
+ucm_connectors:
+  - ucm_connector_name: "UcmPipelineStore"
+    ucm_connector_config:
+      store_pipeline: "Cache|Posix"
+      storage_backends: "/data/ucm/cache"
+      cache_buffer_capacity_gb: 64
+      io_direct: false
+      posix_data_trans_concurrency: 1   # 规避 v0.8.1 并发 layerwise 读写降精度（issue #1544）
+
+enable_event_sync: true
+use_layerwise: true                     # DeepSeek-V4 FAWA 压缩 KV 需要 layerwise
+enable_metrics: true
+persist_token_threshold: 0              # 0 = 不设阈值，完整块都落盘
